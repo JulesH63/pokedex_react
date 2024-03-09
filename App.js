@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './screens/HomeScreen.js';
 import SearchScreen from './screens/SearchScreen';
 import TeamScreen from './screens/TeamScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import SettingScreen from './screens/SettingScreen';
 
 const Tab = createBottomTabNavigator();
 
