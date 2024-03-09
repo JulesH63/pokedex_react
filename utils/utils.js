@@ -46,15 +46,6 @@ const retrieveData = async (key) => {
   }
 };
 
-const retrieveAllKeys = async () => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    return keys;
-  } catch (error) {
-    console.error('Error retrieving all keys:', error);
-    return [];
-  }
-};
 
 const retrieveMultipleData = async (keys) => {
   try {
@@ -71,6 +62,16 @@ const removeData = async (key) => {
     await AsyncStorage.removeItem(key);
   } catch (error) {
     console.error('Error removing data:', error);
+  }
+};
+
+const retrieveAllKeys = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    return keys;
+  } catch (error) {
+    console.error('Error retrieving all keys:', error);
+    return [];
   }
 };
 

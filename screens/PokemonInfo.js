@@ -1,18 +1,20 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
+import { DetailPoke } from "../components/DetailPoke";
 
-export function PokemonInfos({ route }) {
+export function PokemonInfo({ route }) {
   const pokemonData = route.params.pokemonData;
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 10, backgroundColor: "#fff" }}>
-      <View style={{ marginBottom: 20 }}>
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Pokemon Details</Text>
-        <Text>Name: {pokemonData.name}</Text>
-        <Text>Type: {pokemonData.type}</Text>
-        <Text>Height: {pokemonData.height}</Text>
-        <Text>Weight: {pokemonData.weight}</Text>
-      </View>
+    <ScrollView style={styles.container}>
+      <DetailPoke pokemonInfo={pokemonData} />
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+});
