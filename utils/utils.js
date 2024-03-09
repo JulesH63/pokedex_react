@@ -1,92 +1,84 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const getBackgroundColor = (type) => {
-  switch (type) {
-    case "normal":
-      return "#9CA3AF";
-    case "fighting":
-      return "#EF4444";
-    case "flying":
-      return "#60A5FA";
-    case "poison":
-      return "#8B5CF6";
-    case "ground":
-      return "#FBBF24";
-    case "rock":
-      return "#F59E0B";
-    case "bug":
-      return "#10B981";
-    case "ghost":
-      return "#7C3AED";
-    case "steel":
-      return "#6B7280";
-    case "fire":
-      return "#DC2626";
-    case "water":
-      return "#3B82F6";
-    case "grass":
-      return "#10B981";
-    case "electric":
-      return "#FBBF24";
-    case "psychic":
-      return "#EC4899";
-    case "ice":
-      return "#60A5FA";
-    case "dragon":
-      return "#DC2626";
-    case "dark":
-      return "#4B5563";
-    case "fairy":
-      return "#EC4899";
-    case "unknown":
-      return "#F9FAFB";
-    case "shadow":
-      return "#4B5563";
-    default:
-      return "#F9FAFB";
-  }
+const pokemonColors = {
+  normal: "#A8A77A",
+  fighting: "#C22E28",
+  flying: "#A98FF3",
+  poison: "#A33EA1",
+  ground: "#E2BF65",
+  rock: "#B6A136",
+  bug: "#A6B91A",
+  ghost: "#735797",
+  steel: "#B7B7CE",
+  fire: "#EE8130",
+  water: "#6390F0",
+  grass: "#7AC74C",
+  electric: "#F7D02C",
+  psychic: "#F95587",
+  ice: "#96D9D6",
+  dragon: "#6F35FC",
+  dark: "#705746",
+  fairy: "#D685AD",
+  unknown: "#FFFFFF",
+  shadow: "#555555",
 };
 
-export const storeData = async (key, value) => {
+const getPokemonColor = (type) => {
+  return pokemonColors[type] || "#FFFFFF"; // Default color
+};
+
+const saveData = async (key, value) => {
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
-  } catch (e) {
-    // saving error
+  } catch (error) {
+    console.error('Error saving data:', error);
   }
 };
 
-export const getData = async (key) => {
+const retrieveData = async (key) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch (e) {
-    // error reading value
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    return null;
   }
 };
 
-export const getAllKeys = async () => {
+const retrieveAllKeys = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
     return keys;
-  } catch (e) {
-    // error reading value
+  } catch (error) {
+    console.error('Error retrieving all keys:', error);
+    return [];
   }
 };
 
-export const multiGet = async (keys) => {
+const retrieveMultipleData = async (keys) => {
   try {
     const values = await AsyncStorage.multiGet(keys);
     return values;
-  } catch (e) {
-    // read error
+  } catch (error) {
+    console.error('Error retrieving multiple data:', error);
+    return [];
   }
 };
 
-export const removeData = async (key) => {
+const removeData = async (key) => {
   try {
     await AsyncStorage.removeItem(key);
-  } catch (e) {
-    // remove error
+  } catch (error) {
+    console.error('Error removing data:', error);
   }
+};
+
+export {
+  getPokemonColor,
+  saveData,
+  retrieveData,
+  retrieveAllKeys,
+  retrieveMultipleData,
+  removeData,
 };
