@@ -5,16 +5,23 @@ import { CardPoke } from "../components/CardPoke";
 
 export function HomeScreen({ navigation }) {
   const [pokemons, setPokemons] = useState([]);
+  const [pokemonsUrls, setPokemonsUrls] = useState(new Set());
   const pokemonLimit = 20;
   const [offset, setOffset] = useState(0);
 
   const gapSize = 8;
 
   const fetchPokemons = async () => {
-    const response = await axios.get(
-      `https://pokeapi.co/api/v2/pokemon/?limit=${pokemonLimit}&offset=${offset}`
-    );
-    setPokemons((prevPokemons) => [...prevPokemons, ...response.data.results]);
+    try {
+      const response = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/?limit=${pokemonLimit}&offset=${offset}`
+      );
+      const newPokemons = response.data.results.filter((pokemon) => !pokemonsUrls.has(pokemon.url));
+      setPokemons((prevPokemons) => [...prevPokemons, ...newPokemons]);
+      newPokemons.forEach((pokemon) => pokemonsUrls.add(pokemon.url));
+    } catch (error) {
+      console.error("Error fetching Pokémon:", error.message);
+    }
   };
 
   useEffect(() => {
@@ -23,12 +30,11 @@ export function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pokedex</Text>
       {pokemons && (
         <FlatList
           data={pokemons}
           numColumns={2}
-          contentContainerStyle={{ paddingHorizontal: gapSize }}
+          contentContainerStyle={{ paddingHorizontal: gapSize,  }}
           columnWrapperStyle={{ paddingHorizontal: gapSize }}
           renderItem={({ item }) => (
             <CardPoke
@@ -52,6 +58,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: "#fff",
+    justifyContent: "center",
   },
   title: {
     fontSize: 30,

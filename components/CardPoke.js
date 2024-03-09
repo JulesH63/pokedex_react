@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     position: "relative",
     overflow: "hidden",
+    margin: 4,
   },
   name: {
     color: "white",
