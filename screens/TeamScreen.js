@@ -28,9 +28,7 @@ export function TeamScreen({ navigation }) {
 
   return (
     <View style={{ padding: 10, backgroundColor: '#fff', minHeight: '100%' }}>
-      <Text style={{ fontSize: 30, fontWeight: 'bold', marginBottom: 10, color: '#3e424b' }}>
-        My Team
-      </Text>
+
       {pokemonList && (
         <FlatList
           data={pokemonList}

@@ -1,8 +1,7 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import Card from "../components/Card";
+import CardPoke from "../components/CardPoke";
 import axios from 'axios';
-import LoadingSpinner from './LoadingSpinner';
 
 export function SearchScreen() {
   const [searchString, setSearchString] = useState("");
@@ -45,10 +44,10 @@ export function SearchScreen() {
         />
       </View>
 
-      {isLoading && <LoadingSpinner />}
+      {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
       {resultId ? (
         <ScrollView style={{ flex: 1 }}>
-          <Card id={resultId} navigation={navigation} scale={0.8} />
+          <CardPoke id={resultId} navigation={navigation} scale={0.8} />
           <View style={{ height: 30 }}></View>
         </ScrollView>
       ) : (
