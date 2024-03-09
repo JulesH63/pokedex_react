@@ -1,119 +1,101 @@
-import React, { useEffect, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { getPokemonColor } from "../utils/utils";
 
-export function CardPokemon({
-  pokemonName,
-  pokemonUrl,
+export function CardPoke({
+  name,
+  url,
   navigation,
   pokemonDataFromTeam,
 }) {
   const [pokemonData, setPokemonData] = useState({});
 
+  const fetchPokemon = async () => {
+    const response = await axios.get(url);
+    setPokemonData(response.data);
+  };
+
   useEffect(() => {
-    if (pokemonUrl) fetchPokemon();
+    if (url) fetchPokemon();
     if (pokemonDataFromTeam) setPokemonData(pokemonDataFromTeam);
   }, []);
 
-  const fetchPokemon = async () => {
-    try {
-      const response = await fetch(pokemonUrl);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setPokemonData(data);
-    } catch (error) {
-      console.error("Error fetching Pokemon data:", error);
-    }
-  };
+  const pokeColor = getPokemonColor(pokemonData?.types?.[0]?.type?.name);
 
-  const PokeColor = getPokemonColor(pokemonData?.types?.[0]?.type?.name);
-
-  return pokemonData && (
-    <TouchableOpacity
-      onPress={() => navigation.navigate("Details", { pokemonData })}
-      style={{
-        backgroundColor: PokeColor,
-        width: 200,
-        height: 200,
-        padding: 10,
-        borderRadius: 10,
-        margin: 10,
-        justifyContent: "space-between",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 6,
-      }}
-    >
-      <>
-        <Text
-          style={{
-            color: "white",
-            fontSize: 16,
-            fontWeight: "bold",
-            textTransform: "capitalize",
-            marginBottom: 5,
-            textAlign: "center",
-          }}
-        >
-          {pokemonName}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {pokemonData?.types.map((type, index) => (
-            <Text
-              key={index}
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                color: "white",
-                fontSize: 12,
-                textTransform: "capitalize",
-                paddingVertical: 2,
-                paddingHorizontal: 6,
-                borderRadius: 10,
-                marginRight: 2,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.3,
-                shadowRadius: 2,
-                elevation: 2,
-              }}
-            >
-              {type.type.name}
+  return (
+    pokemonData && (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Details", { pokemonData })}
+        style={[styles.cardContainer, { backgroundColor: pokeColor }]}
+      >
+        <>
+          <Text style={styles.name}>
+            {name}
+          </Text>
+          <View style={styles.typeContainer}>
+            <Text style={styles.type}>
+              {pokemonData?.types?.[0]?.type?.name}
             </Text>
-          ))}
-        </View>
-        <View
-          style={{
-            width: "100%",
-            height: 100,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Image
-            style={{ width: 100, height: 100, resizeMode: "contain" }}
-            source={{
-              uri: pokemonData?.sprites?.front_default,
-            }}
-          />
-        </View>
-      </>
-    </TouchableOpacity>
+          </View>
+          {pokemonData?.types?.[1]?.type?.name && (
+            <View style={styles.typeContainer}>
+              <Text style={styles.type}>
+                {pokemonData?.types?.[1]?.type?.name}
+              </Text>
+            </View>
+          )}
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={{ uri: pokemonData?.sprites?.front_default }}
+            />
+          </View>
+        </>
+      </TouchableOpacity>
+    )
   );
 }
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    width: "50%",
+    aspectRatio: 1,
+    padding: 16,
+    borderRadius: 8,
+    position: "relative",
+    overflow: "hidden",
+  },
+  name: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+    textTransform: "capitalize",
+    marginBottom: 8,
+  },
+  typeContainer: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    opacity: 50,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    alignSelf: "flex-start",
+    marginBottom: 6,
+  },
+  type: {
+    color: "white",
+    fontSize: 15,
+    textTransform: "capitalize",
+  },
+  imageContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 120,
+    height: 120,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+});
