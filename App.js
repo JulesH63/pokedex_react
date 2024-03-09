@@ -86,7 +86,7 @@ function TeamStack() {
 function SettingsStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Set my account" component={SettingsScreen} />
+      <Stack.Screen name="Set my account" component={SettingScreen} />
     </Stack.Navigator>
   );
 }
