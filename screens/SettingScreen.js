@@ -1,63 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Switch, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, Text, View, Switch, TouchableOpacity } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import * as SMS from 'expo-sms';
 
-export function SettingsScreen() {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState('');
+export function SettingScreen() {
+  const [orientation, setOrientation] = useState(false);
+  const navigation = useNavigation();
 
-  const toggleSwitch = async () => {
-    if (isEnabled) {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+  const changeOrientation = async (value) => {
+    setOrientation(value);
+    if (value) {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
     } else {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
-    }
-    setIsEnabled((previousState) => !previousState);
-  };
-
-  const sendMessage = async () => {
-    const isAvailable = await SMS.isAvailableAsync();
-    if (isAvailable) {
-      const { result } = await SMS.sendSMSAsync([phoneNumber], 'Pika Pika Pikachu !!!⚡️', {
-        attachments: {
-          uri: 'https://www.icegif.com/wp-content/uploads/2021/11/icegif-110.gif',
-          mimeType: 'image/gif',
-          filename: 'pikachu.gif',
-        },
-      });
-    } else {
-      // Misfortune... il n'y a pas de SMS disponible sur cet appareil
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
-      <View style={styles.settingItem}>
-        <Text>Landscape orientation</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.settingSwitch}>
+        <Text style={styles.label}>Orientation horizontale du téléphone:</Text>
         <Switch
-          trackColor={{ false: '#fefefe', true: '#fb6c6c' }}
-          thumbColor={isEnabled ? '#fff' : '#fff'}
-          ios_backgroundColor='#fefefe'
-          onValueChange={toggleSwitch}
-          value={isEnabled}
+          value={orientation}
+          onValueChange={(value) => changeOrientation(value)}
         />
       </View>
-      <View style={styles.settingItem}>
-        <Text>Enter your phone number to have a surprise</Text>
-        <TextInput
-          style={styles.phoneNumberInput}
-          onChangeText={setPhoneNumber}
-          value={phoneNumber}
-          keyboardType='numeric'
-          returnKeyType='done'
-          onSubmitEditing={sendMessage}
-        />
-      </View>
-      <Button title='Send Surprise' onPress={sendMessage} />
-    </View>
-  );
+
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Text style={styles.backButtonText}>Retour</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -66,21 +39,25 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  settingItem: {
+  settingSwitch: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  phoneNumberInput: {
-    padding: 10,
-    height: 40,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 8,
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  backButton: {
+    backgroundColor: '#ccc',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

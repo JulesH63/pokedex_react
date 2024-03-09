@@ -1,59 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, View, StyleSheet } from "react-native";
+import { CardPoke } from "../components/CardPoke";
 
 export function HomeScreen({ navigation }) {
-  const [pokemonList, setPokemonList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [pokemons, setPokemons] = useState([]);
+  const pokemonLimit = 20;
+  const [offset, setOffset] = useState(0);
+
+  const gapSize = 8;
+
+  const fetchPokemons = async () => {
+    const response = await axios.get(
+      `https://pokeapi.co/api/v2/pokemon/?limit=${pokemonLimit}&offset=${offset}`
+    );
+    setPokemons((prevPokemons) => [...prevPokemons, ...response.data.results]);
+  };
 
   useEffect(() => {
-    fetchPokemonList();
-  }, []);
-
-  const fetchPokemonList = async () => {
-    try {
-      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon`);
-      setPokemonList(response.data.results);
-    } catch (error) {
-      console.error('Error fetching Pokémon:', error);
-    }
-  };
-
-
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    // Effectuer la recherche ou le filtrage ici
-  };
+    fetchPokemons();
+  }, [offset]);
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search Pokémon"
-        value={searchQuery}
-        onChangeText={handleSearch}
-      />
-      <FlatList
-        data={pokemonList}
-        renderItem={renderPokemonItem}
-        keyExtractor={(item) => item.name}
-      />
+      <Text style={styles.title}>Pokedex</Text>
+      {pokemons && (
+        <FlatList
+          data={pokemons}
+          numColumns={2}
+          contentContainerStyle={{ paddingHorizontal: gapSize }}
+          columnWrapperStyle={{ paddingHorizontal: gapSize }}
+          renderItem={({ item }) => (
+            <CardPoke
+              name={item.name}
+              url={item.url}
+              navigation={navigation}
+            />
+          )}
+          keyExtractor={(item) => item.url}
+          onEndReached={() => {
+            setOffset(offset + pokemonLimit);
+          }}
+          onEndReachedThreshold={0.5}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    padding: 10,
+    backgroundColor: "#fff",
   },
-  searchInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
     marginBottom: 10,
-    paddingHorizontal: 10,
+    color: "#3e424b",
   },
 });
