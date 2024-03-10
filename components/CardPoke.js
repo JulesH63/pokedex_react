@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   type: {
-    color: "white",
+    color: "grey",
     fontSize: 15,
     textTransform: "capitalize",
   },

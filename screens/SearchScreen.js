@@ -1,25 +1,28 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import CardPoke from "../components/CardPoke";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View, ActivityIndicator } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { CardPoke } from "../components/CardPoke";
 import axios from 'axios';
 
 export function SearchScreen() {
   const [searchString, setSearchString] = useState("");
   const [resultId, setResultId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const navigation = useNavigation();
+  const [error, setError] = useState(null); 
+
+  let searchTimeout;
 
   const fetchPokemonList = async () => {
     setResultId(null);
     setIsLoading(true);
-    setIsError(false);
+    setError(null);
     try {
       const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${searchString.toLowerCase()}`);
       setResultId(response.data.id);
     } catch (error) {
       console.error('Error searching Pokémon:', error.message);
-      setResultId(null);
-      setIsError(true);
+      setError("The Pokémon was not found.");
     } finally {
       setIsLoading(false);
     }
@@ -28,9 +31,17 @@ export function SearchScreen() {
   useEffect(() => {
     if (searchString === "") {
       setResultId(null);
-    } else {
-      fetchPokemonList();
+      return;
     }
+
+    // Déclencher la recherche après une pause de 500ms
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      fetchPokemonList();
+    }, 500);
+
+    // Nettoyer le timeout lors du démontage du composant
+    return () => clearTimeout(searchTimeout);
   }, [searchString]);
 
   return (
@@ -45,16 +56,18 @@ export function SearchScreen() {
       </View>
 
       {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
-      {resultId ? (
+      {error ? (
+        <View style={styles.content}>
+          <Text style={styles.text}>{error}</Text>
+        </View>
+      ) : resultId ? (
         <ScrollView style={{ flex: 1 }}>
           <CardPoke id={resultId} navigation={navigation} scale={0.8} />
           <View style={{ height: 30 }}></View>
         </ScrollView>
       ) : (
         <View style={styles.content}>
-          {searchString.length > 0 && isError && (
-            <Text style={styles.text}>The Pokémon "{searchString}" was not found.</Text>
-          )}
+          <Text style={styles.text}>No Pokémon found.</Text>
         </View>
       )}
     </SafeAreaView>

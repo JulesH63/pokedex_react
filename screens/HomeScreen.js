@@ -57,7 +57,7 @@ export function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "lightblue",
     justifyContent: "center",
   },
   title: {
